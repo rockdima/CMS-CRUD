@@ -21,6 +21,7 @@ switch (urlParams.pathname) {
         if (localStorage.getItem("token") == null) {
             window.location = '/';
         }
+        console.log(111);
 
         $.ajax({
             url: data.url + '/customers',
@@ -33,7 +34,7 @@ switch (urlParams.pathname) {
 
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                if (jqXHR.responseJSON.authError) {
+                if (jqXHR.responseJSON.status == 'authError') {
                     localStorage.removeItem('token');
                     window.location = '/';
                 }
