@@ -1,0 +1,14 @@
+{
+    "require": {
+        "php-di/php-di": "^7.0",
+        "nikic/fast-route": "^2.0.0-beta1",
+        "firebase/php-jwt": "^6.10",
+        "laminas/laminas-diactoros": "^3.3",
+        "vlucas/valitron": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "src/"
+        }
+    }
+}

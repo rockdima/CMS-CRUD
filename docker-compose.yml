@@ -1,0 +1,45 @@
+services:
+
+  db:
+    build: './mysql'
+    container_name: mysql_container
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    volumes:
+      - ./mysql/dbData:/var/lib/mysql
+
+  backend:
+    build: './php'
+    container_name: backend
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    environment:
+      - MYSQL_HOST=db
+    ports:
+      - "${BACKEND_PORT}:80"
+    volumes:
+      - ./php:/var/www/html
+
+  frontend:
+    build: './front'
+    container_name: frontend
+    ports:
+      - "${FRONTEND_PORT}:80"
+    volumes:
+      - ./front:/usr/local/apache2/htdocs/
+
+  adminer:
+    image: adminer
+    container_name: adminer_container
+    ports:
+      - "8080:8080"
+
+volumes:
+  dbData:
