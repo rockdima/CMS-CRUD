@@ -112,10 +112,21 @@ foreach ($middlewares as $middleware) {
 // Start the request
 $response = $next($request);
 
+// escape output
+function escapeOutput($data) {
+    if(is_array($data))
+        return array_map('escapeOutput', $data);
+
+    return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+}
+
+$arr = json_decode($response->getBody(), true);
+$arr['data'] = array_map('escapeOutput', $arr['data']);
+
+
 // add headers
 foreach ($response->getHeaders() as $header => $value) {
     header("{$header}: {$value[0]}");
 }
-
 http_response_code($response->getStatusCode());
-echo $response->getBody();
+echo json_encode($arr);
