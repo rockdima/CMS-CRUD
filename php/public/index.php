@@ -20,6 +20,7 @@ use FastRoute\Dispatcher\GroupCountBased;
 use FastRoute\RouteParser\Std as StdParser;
 use FastRoute\DataGenerator\GroupCountBased as GroupCountBasedDataGenerator;
 use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Diactoros\ServerRequest;
 use Laminas\Diactoros\Response\JsonResponse;
 
 use App\Controllers\CustomerController;
@@ -41,6 +42,9 @@ $containerBuilder->addDefinitions([
             $_ENV['MYSQL_USER'],
             $_ENV['MYSQL_PASSWORD']
         );
+    },
+    ServerRequest::class => function () {
+        return ServerRequestFactory::fromGlobals();
     }
 ]);
 
@@ -64,7 +68,7 @@ $routeCollector->addGroup('/users', function (RouteCollector $r) {
 
 $dispatcher = new GroupCountBased($routeCollector->getData());
 
-$request = ServerRequestFactory::fromGlobals();
+$request = $container->get(ServerRequest::class);
 $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
 
 // get middleware for route

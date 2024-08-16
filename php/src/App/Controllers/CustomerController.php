@@ -4,14 +4,15 @@ namespace App\Controllers;
 
 use App\Services\CustomerService;
 use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\ServerRequest;
 use Valitron\Validator;
 
 class CustomerController {
 
     private $body;
 
-    function __construct(private CustomerService $customerService, private Validator $validator) {
-        $this->body = $_POST;
+    function __construct(ServerRequest $request, private CustomerService $customerService, private Validator $validator) {
+        $this->body = $request->getParsedBody();
     }
 
     /**

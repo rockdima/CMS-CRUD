@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Services\UserService;
 use Laminas\Diactoros\Response\JsonResponse;
+use Laminas\Diactoros\ServerRequest;
 use App\Middlewares\JWTAuth;
 use Valitron\Validator;
 
@@ -11,8 +12,8 @@ class UserController {
 
     private $body;
 
-    function __construct(private UserService $userService, private JWTAuth $jwtAuth, private Validator $validator) {
-        $this->body = $_POST;
+    function __construct(ServerRequest $request, private UserService $userService, private JWTAuth $jwtAuth, private Validator $validator) {
+        $this->body = $request->getParsedBody();
     }
 
     /**
