@@ -30,6 +30,7 @@ use App\utils\db\DBInterface;
 use App\utils\db\MySQL;
 
 use App\Middlewares\JWTAuth;
+use App\Middlewares\IOSanitize;
 
 $containerBuilder = new ContainerBuilder();
 
@@ -73,6 +74,7 @@ $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getUri()->ge
 
 // get middleware for route
 $middlewares = $routeInfo[1][2] ?? [];
+$middlewares[] = IOSanitize::class;
 
 // Middleware execution
 $next = function ($request) use ($container, $routeInfo) {
@@ -98,8 +100,12 @@ $next = function ($request) use ($container, $routeInfo) {
             $handler = $routeInfo[1];
             $vars = $routeInfo[2];
 
+            // set updated request
+            $container->set(ServerRequest::class, $request);
+
             list($controller, $method) = $handler;
             $controllerInstance = $container->get($controller);
+
             return call_user_func_array([$controllerInstance, $method], $vars);
             break;
     }
@@ -117,15 +123,9 @@ foreach ($middlewares as $middleware) {
 $response = $next($request);
 
 // escape output
-function escapeOutput($data) {
-    if(is_array($data))
-        return array_map('escapeOutput', $data);
-
-    return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-}
-
-$arr = json_decode($response->getBody(), true);
-$arr['data'] = array_map('escapeOutput', $arr['data']);
+$bodyArray = json_decode($response->getBody(), true);
+$sanitizeOutput = $container->get(IOSanitize::class);
+$bodyArray['data'] = array_map([$sanitizeOutput, 'sanitize'], $bodyArray['data']);
 
 
 // add headers
@@ -133,4 +133,4 @@ foreach ($response->getHeaders() as $header => $value) {
     header("{$header}: {$value[0]}");
 }
 http_response_code($response->getStatusCode());
-echo json_encode($arr);
+echo json_encode($bodyArray);
