@@ -1,4 +1,5 @@
 *.env
 mysql/dbData/*
-!mysql/dbData/.gitkeep
+.gitkeep
 .vscode
+.DS_Store
