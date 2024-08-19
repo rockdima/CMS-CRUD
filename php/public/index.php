@@ -27,7 +27,8 @@ use App\Controllers\CustomerController;
 use App\Controllers\UserController;
 
 use App\utils\db\DBInterface;
-use App\utils\db\MySQL;
+use App\utils\db\DBRelative;
+use App\utils\db\DBDriver;
 
 use App\Middlewares\JWTAuth;
 use App\Middlewares\IOSanitize;
@@ -37,8 +38,10 @@ $containerBuilder = new ContainerBuilder();
 // set for DI Container
 $containerBuilder->addDefinitions([
     DBInterface::class => function () {
-        return new MySQL(
+        return new DBRelative(
+            DBDriver::MYSQL,
             $_ENV['MYSQL_HOST'],
+            $_ENV['MYSQL_PORT'],
             $_ENV['MYSQL_DB'],
             $_ENV['MYSQL_USER'],
             $_ENV['MYSQL_PASSWORD']

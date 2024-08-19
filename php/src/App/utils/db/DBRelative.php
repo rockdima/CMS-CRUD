@@ -4,23 +4,19 @@ namespace App\utils\db;
 
 use PDO;
 use Exception;
-use PDOStatement;
+use App\utils\db\DBDriver;
 
-class MySQL implements DBInterface {
+class DBRelative implements DBInterface {
 
     private $connection;
 
-    function __construct(private $host, private $db, private $user, private $password) {
-        $this->connect();
-    }
-
-    function connect() {
+    function __construct(private DBDriver $driver, private string $host, private string $port, private string $db, private string $user, private string $password) {
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ];
-        $this->connection = new PDO("mysql:host={$this->host};dbname={$this->db}", $this->user, $this->password, $options);
+        $this->connection = new PDO("{$this->driver->value}:host={$this->host};port={$this->port};dbname={$this->db}", $this->user, $this->password, $options);
     }
 
     function query(string $query, array $params) {

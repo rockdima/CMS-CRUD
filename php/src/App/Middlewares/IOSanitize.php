@@ -7,7 +7,7 @@ use Laminas\Diactoros\ServerRequest;
 
 class IOSanitize {
 
-    public function handle( $request, $next) {
+    public function handle($request, $next) {
 
         $sanitizedBody = array_map([$this, 'sanitize'], $request->getParsedBody());
         $newRequest = $request->withParsedBody($sanitizedBody);
