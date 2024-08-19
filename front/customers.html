@@ -7,15 +7,14 @@
     <title></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.2/dist/bootstrap-table.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.2/dist/bootstrap-table.min.css">
 </head>
 
 <body class="h-100 d-flex align-items-center justify-content-center">
     <div id="content" class="w-50 h-100 p-3" style="background-color: #eee;">
         <p class="js-title text-center h1"></p>
 
-        <table id="table" data-toggle="table" data-height="460" data-ajax="ajaxRequest" data-search="true"
-            data-side-pagination="server" data-pagination="true">
+        <table id="customers" class="table" data-toggle="table" data-pagination="true" data-search="true" data-id-field="ID">
             <thead>
                 <tr>
                     <th data-field="ID">ID</th>
@@ -23,6 +22,8 @@
                     <th data-field="email">Email</th>
                     <th data-field="address">Address</th>
                     <th data-field="phone">Phone</th>
+                    <th data-field="actions" data-formatter="actionFormatter">Actions</th>
+                </tr>
                 </tr>
             </thead>
         </table>
@@ -39,7 +40,7 @@
         crossorigin="anonymous"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.23.2/dist/bootstrap-table.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-table/dist/bootstrap-table.min.js"></script>
     <script src="script.js"></script>
 </body>
 

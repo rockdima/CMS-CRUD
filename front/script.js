@@ -9,37 +9,20 @@ var data = {
 
 switch (urlParams.pathname) {
     case '/':
-        if (localStorage.getItem("token") !== null) {
+        if (loggedIn())
             window.location = '/customers.html';
-        }
 
         data.title = 'Welcome';
 
         break;
 
     case '/customers.html':
-        if (localStorage.getItem("token") == null) {
+        if (!loggedIn())
             window.location = '/';
-        }
-        console.log(111);
 
-        $.ajax({
-            url: data.url + '/customers',
-            method: 'GET',
-            async: false, // Synchronous request
-            headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem("token"),
-            },
-            success: function (response) {
+        loadAllCustomers();
 
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                if (jqXHR.responseJSON.status == 'authError') {
-                    localStorage.removeItem('token');
-                    window.location = '/';
-                }
-            }
-        });
+
 
         data.title = 'Customers';
 
@@ -51,54 +34,106 @@ switch (urlParams.pathname) {
 
 $('.js-title, title').text([data.mainName, data.title].join(' - '));
 
+
+
 function onSubmitLoginRegisterForm(form, event) {
-    event.preventDefault(); // Prevent form from submitting the traditional way
+    event.preventDefault();
 
-    fetch(data.url + $(form).attr('action'), { // Replace with your API endpoint
-        method: 'POST',
-        body: new FormData(form)
-    })
-        .then(response => response.json())
-        .then(data => {
+    fetchRequest('POST', $(form).attr('action'), 0, form).then(data => {
 
-            $(form).find('.responseMessage').text('');
+        $(form).find('.responseMessage').text('');
 
-            if (data.status == 'error') {
+        if (data.status == 'error') {
 
-                $(form).find('.responseMessage').append(`<div class="alert alert-danger">${data.msg}</div>`);
+            $(form).find('.responseMessage').append(`<div class="alert alert-danger">${data.msg}</div>`);
 
-                $.each(data.data, (i, v) => {
-                    $(form).find('.responseMessage').append(`<div class="alert alert-danger">${v.join('<br>')}</div>`);
-                })
-            }
+            $.each(data.data, (i, v) => {
+                $(form).find('.responseMessage').append(`<div class="alert alert-danger">${v.join('<br>')}</div>`);
+            })
+        }
 
-            if (data.status == 'success') {
-                $(form).find('.responseMessage').append(`<div class="alert alert-success">${data.msg}</div>`);
-                if (data.data.token !== undefined)
-                    localStorage.setItem('token', data.data.token);
-                if (data.data.redirect !== undefined)
-                    window.location = data.data.redirect;
-            }
+        if (data.status == 'success') {
+            $(form).find('.responseMessage').append(`<div class="alert alert-success">${data.msg}</div>`);
+            if (data.data.token !== undefined)
+                localStorage.setItem('token', data.data.token);
+            if (data.data.redirect !== undefined)
+                window.location = data.data.redirect;
+        }
 
-        })
+    });
 }
 
-function ajaxRequest(params) {
-    $.ajax({
-        url: data.url + '/customers',
-        method: 'GET',
-        async: false, // Synchronous request
-        headers: {
-            'Authorization': 'Bearer ' + localStorage.getItem("token"),
-        },
-        success: function (res) {
-            params.success(res.data)
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            if (jqXHR.responseJSON.authError) {
-                localStorage.removeItem('token');
-                window.location = '/';
+function loadAllCustomers() {
+    fetchRequest('GET', '/customers', 1).then(data => {
+        $('#customers').bootstrapTable('load', data.data);
+    })
+}
+
+function actionFormatter(value, row, index) {
+    return `
+        <button class="btn btn-primary edit js-edit" data-id="${row.ID}">Edit</button>
+        <button class="btn btn-danger delete js-delete" data-id="${row.ID}">Delete</button>
+    `;
+}
+
+$(document).ready(function () {
+    setTimeout(function () {
+        var $table = $('#customers');
+        $table.on('click', ".js-delete", function (e) {
+            if (confirm('Are you sure?')) {
+                fetchRequest('DELETE', '/customers/delete/' + this.dataset.id, 1).then(data => {
+                    if (data.status == 'error') {
+                        alert(data.msg);
+                    }
+                    if (data.status == 'success') {
+                        var id = $(this).attr('data-id');
+
+                        $table.bootstrapTable('remove', {
+                            field: 'ID',
+                            values: [id]
+                        });
+                        $table.bootstrapTable('refreshOptions', {
+                            silent: true // Ensures no data is fetched again, just updates the UI
+                        });
+                    }
+                })
             }
-        }
-    });
+        })
+    }, 0)
+});
+
+
+async function fetchRequest(method, action, auth, formData) {
+    const options = {
+        method: method,
+    };
+
+    const myHeaders = new Headers();
+    if (auth) {
+        myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem("token"));
+    }
+    options.headers = myHeaders;
+
+    if (formData !== undefined && ['POST', 'PUT', 'PATCH'].indexOf(method) !== -1) {
+        options.body = new FormData(formData);
+    }
+
+    return await fetch(data.url + action, options)
+        .then(response => response.json())
+        .then(resData => {
+            if (resData.status == 'authError') {
+                logOut()
+            }
+            return resData;
+        })
+        .catch(error => console.error(error))
+}
+
+function loggedIn() {
+    return localStorage.getItem("token") !== null;
+}
+
+function logOut() {
+    localStorage.removeItem('token');
+    window.location = '/';
 }
