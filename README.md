@@ -39,7 +39,7 @@ docker-compose up -d
 Execute init queries from file
 
 ```bash
-init.sql
+mysql/init.sql
 ```
 
 ### Default URL's
