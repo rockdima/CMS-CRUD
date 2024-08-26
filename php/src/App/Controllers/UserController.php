@@ -44,7 +44,7 @@ class UserController {
                 'msg'       => 'Success',
                 'data'      => [
                     'token' => $jwt,
-                    'redirect' => '/customers.html'
+                    'redirect' => '/customers'
                 ]
             ], 200);
         }
@@ -85,7 +85,7 @@ class UserController {
                 'msg'       => 'Success',
                 'data'      => [
                     'token' => $jwt,
-                    'redirect' => '/customers.html'
+                    'redirect' => '/customers'
                 ]
             ], 200);
         }

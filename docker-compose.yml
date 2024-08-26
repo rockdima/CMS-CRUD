@@ -29,11 +29,14 @@ services:
 
   frontend:
     build: './front'
+    env_file: 
+      - ./.env
     container_name: frontend
     ports:
-      - "${FRONTEND_PORT}:80"
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     volumes:
-      - ./front:/usr/local/apache2/htdocs/
+      - ./front:/app
+      - /front/node_modules
 
   adminer:
     image: adminer
