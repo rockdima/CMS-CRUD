@@ -1,0 +1,21 @@
+<%- include('../partials/header') %>
+
+<div id="content" class="w-50 h-100 p-3" style="background-color: #eee;">
+    <p class="js-title text-center h1"></p>
+
+    <table id="customers" class="table" data-toggle="table" data-pagination="true" data-search="true" data-id-field="ID">
+        <thead>
+            <tr>
+                <th data-field="ID">ID</th>
+                <th data-field="name">Name</th>
+                <th data-field="email">Email</th>
+                <th data-field="address">Address</th>
+                <th data-field="phone">Phone</th>
+                <th data-field="actions" data-formatter="actionFormatter">Actions</th>
+            </tr>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<%- include('../partials/footer') %>

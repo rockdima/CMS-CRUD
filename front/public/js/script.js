@@ -10,13 +10,13 @@ var data = {
 switch (urlParams.pathname) {
     case '/':
         if (loggedIn())
-            window.location = '/customers.html';
+            window.location = '/customers';
 
         data.title = 'Welcome';
 
         break;
 
-    case '/customers.html':
+    case '/customers':
         if (!loggedIn())
             window.location = '/';
 
@@ -28,15 +28,27 @@ switch (urlParams.pathname) {
 
         break;
 
+    case '/customers/edit':
+        if (!loggedIn())
+            window.location = '/';
+
+        data.title = 'Customers';
+
+        break;
+
     default:
         break;
 }
 
-$('.js-title, title').text([data.mainName, data.title].join(' - '));
+if( loggedIn() ){
+    data.title += ` <span onclick="return logOut();" style="font-size:1rem; color:red; cursor:pointer;">Logout</span>`;
+}
+
+$('.js-title, title').html([data.mainName, data.title].join(' - '));
 
 
 
-function onSubmitLoginRegisterForm(form, event) {
+function onSubmitForm(form, event) {
     event.preventDefault();
 
     fetchRequest('POST', $(form).attr('action'), 0, form).then(data => {

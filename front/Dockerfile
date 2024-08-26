@@ -1,5 +1,13 @@
-FROM httpd:alpine
+FROM node:22-alpine
 
-RUN apk update
+RUN npm install -g nodemon
 
-COPY . /usr/local/apache2/htdocs/
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+CMD ["npm", "start"]
